@@ -31,7 +31,10 @@ export default function Login() {
             toast.success('Login successful!');
             navigate('/projects');
         } catch (error) {
-            toast.error(error.response?.data?.detail || 'Login failed');
+            // Show detailed backend message when available for easier debugging
+            const backendMessage = error.response?.data?.detail || error.response?.data?.error?.message || JSON.stringify(error.response?.data);
+            console.error('Login error:', error.response?.data || error.message);
+            toast.error(backendMessage || error.message || 'Login failed');
         } finally {
             setLoading(false);
         }
@@ -42,7 +45,7 @@ export default function Login() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8 animate-fade-in">
                     <div className="inline-block w-16 h-16 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                        <span className="text-3xl font-bold text-white">IH</span>
+                        <span className="text-3xl font-bold text-white">HI</span>
                     </div>
                     <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
                         Welcome Back
@@ -86,8 +89,8 @@ export default function Login() {
 
                     <div className="mt-6 p-4 glass rounded-lg">
                         <p className="text-sm text-gray-400 mb-2">Demo credentials:</p>
-                        <p className="text-xs text-gray-500">alice@example.com / password123</p>
-                        <p className="text-xs text-gray-500">bob@example.com / password123</p>
+                        <p className="text-xs text-white font-semibold">alice@example.com / password123</p>
+                        <p className="text-xs text-white font-semibold">bob@example.com / password123</p>
                     </div>
                 </div>
             </div>

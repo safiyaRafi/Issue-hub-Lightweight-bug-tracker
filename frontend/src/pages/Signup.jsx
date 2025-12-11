@@ -49,7 +49,7 @@ export default function Signup() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8 animate-fade-in">
                     <div className="inline-block w-16 h-16 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                        <span className="text-3xl font-bold text-white">IH</span>
+                        <span className="text-3xl font-bold text-white">HI</span>
                     </div>
                     <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
                         Get Started

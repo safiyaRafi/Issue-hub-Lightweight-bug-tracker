@@ -1,3 +1,10 @@
+import warnings
+# Suppress known DeprecationWarning from python-jose internals which use
+# datetime.utcnow() (the library issue is harmless for our usage and
+# produces noisy yellow warnings). We scope the filter to the jose.jwt
+# module so other DeprecationWarnings still appear during development.
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -9,6 +16,7 @@ app = FastAPI(
     description="A lightweight bug tracker API",
     version="1.0.0"
 )
+
 
 # CORS middleware
 app.add_middleware(

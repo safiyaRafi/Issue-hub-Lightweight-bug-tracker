@@ -1,18 +1,23 @@
 from pydantic import BaseModel, EmailStr
+from pydantic import ConfigDict
 from datetime import datetime
+
 
 class SignupRequest(BaseModel):
     name: str
     email: EmailStr
     password: str
 
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
 
 class UserResponse(BaseModel):
     id: int
@@ -20,6 +25,5 @@ class UserResponse(BaseModel):
     email: str
     created_at: datetime
     
-    class Config:
-        # Allow reading data from ORM objects (SQLAlchemy models)
-        orm_mode = True
+    # Pydantic v2 config to read from ORM objects
+    model_config = ConfigDict(from_attributes=True)

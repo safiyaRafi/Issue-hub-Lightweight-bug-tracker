@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from datetime import datetime
 from typing import Optional
 
@@ -14,8 +15,7 @@ class ProjectResponse(BaseModel):
     description: Optional[str]
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class AddMemberRequest(BaseModel):
     email: str
@@ -28,5 +28,4 @@ class MemberResponse(BaseModel):
     user_name: str
     user_email: str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

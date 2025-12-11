@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+import logging
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -9,10 +10,38 @@ from ..config import settings
 from ..database import get_db
 from ..models.user import User
 
-# Use passlib to hash passwords with bcrypt
-# Use PBKDF2-SHA256 for password hashing to avoid bcrypt binary/backends
-# and to allow arbitrary-length passwords in this dev environment.
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+# Use passlib CryptContext with multiple schemes:
+# - prefer bcrypt for new hashes (stronger and standard for production)
+# - keep pbkdf2_sha256 as a fallback so existing hashes still verify during migration
+# Note: bcrypt may require a binary dependency on some systems; CI/dev may fallback to
+# pbkdf2_sha256 if bcrypt isn't available. Passlib will verify and re-hash on next login
+# if you implement re-hash logic.
+# Detect whether a working bcrypt backend is available at runtime. Some environments
+# (CI or Windows with a problematic `bcrypt` wheel) may have an installed but
+# non-functional bcrypt module which causes runtime errors; in that case we fall
+# back to using pbkdf2_sha256 only to keep the app/test-suite working.
+try:
+    import bcrypt as _bcrypt_mod  # type: ignore
+    try:
+        # quick smoke test to ensure bcrypt can hash
+        _bcrypt_mod.hashpw(b"test", _bcrypt_mod.gensalt())
+        _bcrypt_available = True
+    except Exception:
+        _bcrypt_available = False
+except Exception:
+    _bcrypt_available = False
+
+if _bcrypt_available:
+    # choose default based on settings; fall back to pbkdf2 if preferred isn't available
+    preferred = getattr(settings, "preferred_password_scheme", "pbkdf2_sha256")
+    if preferred == "bcrypt":
+        default_scheme = "bcrypt"
+    else:
+        default_scheme = "pbkdf2_sha256"
+    pwd_context = CryptContext(schemes=["bcrypt", "pbkdf2_sha256"], default=default_scheme, deprecated="auto")
+else:
+    logging.warning("bcrypt backend unavailable or broken; falling back to pbkdf2_sha256 for password hashing")
+    pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 

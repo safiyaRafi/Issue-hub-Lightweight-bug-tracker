@@ -473,3 +473,39 @@ Built with as a demonstration of full-stack development skills.
 - Set up database backups
 - Use environment-specific configurations
 - Add monitoring and logging
+
+## 🚢 Deployment (Frontend -> Vercel, Backend -> Render/Railway)
+
+This repository includes recommended configuration and example files to deploy the frontend to Vercel and the backend to a managed PaaS (Render or Railway).
+
+Summary:
+- Frontend: Deploy the `frontend` folder to Vercel (Vite static build). A `vercel.json` is included in `frontend/`.
+- Backend: Deploy the `backend` service to Render or Railway. A `backend/Dockerfile` and `render.yaml` are included for convenience.
+
+Quick deploy steps (Vercel + Render)
+
+1) Frontend (Vercel)
+  - Login to Vercel and import this GitHub repository.
+  - When adding the project, set the root directory to `frontend`.
+  - Build command: `npm run build` (already present in `package.json`).
+  - Output directory: `dist`.
+  - Optionally set an environment variable `VITE_API_BASE_URL` to your backend URL if you host the backend on a custom domain.
+
+2) Backend (Render)
+  - Login to Render and create a new service from this repository or use `render.yaml`.
+  - Create a new Web Service and choose "Docker". Set the Dockerfile path to `backend/Dockerfile`.
+  - Create a managed Postgres instance on Render (or supply an external Postgres) and copy its connection string to the `DATABASE_URL` environment variable for the web service.
+  - Set the following environment variables for the backend service:
+    - `DATABASE_URL` (Postgres connection string)
+    - `SECRET_KEY` (secure random string)
+    - `PREFERRED_PASSWORD_SCHEME` (set to `bcrypt` in production if supported)
+    - `CORS_ORIGINS` (your frontend URL, e.g. `https://your-frontend.vercel.app`)
+  - Deploy and wait for the service to be healthy. Use the Render dashboard to run the seed script (`python app/seed.py`) as a one-off job to populate demo data.
+
+Notes
+- If you use Railway, the steps are similar: create a new service, connect the repo, and either set the Dockerfile path or supply a build command. Add Railway's Postgres plugin and update `DATABASE_URL` accordingly.
+- The included `backend/Dockerfile` is a minimal image using Uvicorn. For production you may switch to Gunicorn + Uvicorn workers and tune worker counts.
+- Keep `SECRET_KEY` secret. Do not commit `.env` to the repository. Use `render.yaml` or the provider dashboard to set secrets.
+
+Want deployment automation?
+- I can add a GitHub Actions workflow that builds the frontend and triggers a Vercel/Render deployment using repository secrets (Vercel/Render API keys). If you'd like automation, tell me which provider(s) and I'll add the workflow and instructions to store the required secrets.

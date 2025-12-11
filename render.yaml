@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: issuehub-backend
+    env: docker
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    autoDeploy: true
+
+  - type: postgres
+    name: issuehub-db
+    plan: starter

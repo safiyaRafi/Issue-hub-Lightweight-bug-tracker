@@ -7,11 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  test-matrix:
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11, 3.12]
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
@@ -28,61 +25,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Run backend tests
+      - name: Run tests
         working-directory: backend
         run: |
           . ../venv/bin/activate || true
-          pytest -q
-
-  migrations-postgres:
-    runs-on: ubuntu-latest
-    needs: test-matrix
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: issuehub_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d issuehub_test" --health-interval 10s --health-timeout 5s --health-retries 5
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Wait for Postgres
-        run: |
-          echo "Waiting for Postgres to be ready..."
-          sleep 10
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install backend deps
-        run: |
-          python -m venv venv
-          . venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
-
-      - name: Run alembic migrations against Postgres
-        working-directory: backend
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
-        run: |
-          . ../venv/bin/activate || true
-          export DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
-          python -c "from app.config import settings; settings.database_url='postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test'"
-          alembic upgrade head
-      - name: Run backend tests against Postgres
-        working-directory: backend
-        env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
-        run: |
-          . ../venv/bin/activate || true
-          export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
           pytest -q

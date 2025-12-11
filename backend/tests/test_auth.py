@@ -1,12 +1,7 @@
-from fastapi.testclient import TestClient
-from app.main import app
 import uuid
 
 
-client = TestClient(app)
-
-
-def test_signup_creates_user():
+def test_signup_creates_user(client):
     # Use a unique email to avoid collisions with existing fixtures
     email = f"pytest_{uuid.uuid4().hex[:8]}@example.com"
     payload = {"name": "pytest user", "email": email, "password": "secret123"}

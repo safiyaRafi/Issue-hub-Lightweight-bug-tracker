@@ -48,6 +48,23 @@ Frontend
 Notes
 - CI runs a Python matrix and also verifies Alembic migrations against a PostgreSQL service. If you plan to run the app in production, prefer PostgreSQL over SQLite.
 - Password hashing uses pbkdf2_sha256 in this repository for portability in CI/dev; migrate to bcrypt or argon2 for production if your environment supports it.
+
+Docker (development)
+
+You can use Docker Compose to run a local development stack (Postgres + backend + frontend).
+
+1. Build and start the stack:
+
+  docker compose up --build
+
+2. What runs:
+  - Postgres on localhost:5432
+  - Backend on localhost:8000 (Uvicorn)
+  - Frontend (Vite) on localhost:5173
+
+3. Notes:
+  - The compose setup runs `alembic upgrade head` automatically for the backend.
+  - In this dev stack `PREFERRED_PASSWORD_SCHEME` is set to `bcrypt`; make sure your environment can build the `bcrypt` wheel if needed.
 # IssueHub — Lightweight Bug Tracker
 
 A modern, full-stack bug tracking application built with FastAPI and React. IssueHub enables teams to create projects, file issues, track progress, and collaborate through comments with role-based access control.

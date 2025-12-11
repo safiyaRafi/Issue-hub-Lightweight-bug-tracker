@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.user import User
 from ..schemas.auth import SignupRequest, LoginRequest, TokenResponse, UserResponse
-from ..auth.security import get_password_hash, verify_password, create_access_token, get_current_user
+from ..auth.security import get_password_hash, verify_password, create_access_token, get_current_user, needs_rehash
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -39,6 +39,18 @@ def login(request: LoginRequest, response: Response, db: Session = Depends(get_d
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password"
         )
+    # If the stored hash uses an older scheme, re-hash with the preferred/current
+    # scheme and update the database. This migrates users to stronger hashes on
+    # their next successful login without forcing a password reset.
+    try:
+        if needs_rehash(user.password_hash):
+            user.password_hash = get_password_hash(request.password)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+    except Exception:
+        # If re-hash fails for any reason, continue without blocking login.
+        pass
     
     # Create access token
     access_token = create_access_token(data={"sub": str(user.id)})

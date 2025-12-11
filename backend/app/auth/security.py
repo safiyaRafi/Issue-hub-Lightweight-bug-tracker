@@ -92,3 +92,16 @@ def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+
+def needs_rehash(hashed_password: str) -> bool:
+    """Return True if the given hash should be updated to the current preferred scheme.
+
+    This wraps Passlib's `needs_update` API so callers (e.g. the login route) can
+    decide to re-hash and persist a stronger hash transparently on next successful login.
+    """
+    try:
+        return pwd_context.needs_update(hashed_password)
+    except Exception:
+        # If anything goes wrong, don't force a rehash (avoid locking users out)
+        return False

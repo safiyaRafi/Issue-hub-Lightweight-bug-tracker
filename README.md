@@ -1,3 +1,53 @@
+# Lightweight bug tracker
+A modern, full-stack bug tracking application built with FastAPI and React. IssueHub enables teams to create projects, file issues, track progress, and collaborate through comments with role-based access control.
+
+## Development quickstart
+
+These instructions show how to run the backend, apply migrations, run tests, and start the frontend on a development machine.
+
+Prerequisites:
+- Python 3.11+ (3.12 supported)
+- Node.js 18+ (for frontend)
+
+Backend
+1. Create and activate a virtual environment:
+
+  On Windows (Git Bash):
+  python -m venv venv
+  . venv/Scripts/activate
+
+2. Install Python dependencies:
+
+  pip install --upgrade pip
+  pip install -r backend/requirements.txt
+
+3. Run migrations:
+
+  cd backend
+  alembic upgrade head
+
+4. Start the backend (development):
+
+  python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+5. Run tests:
+
+  From the repository root:
+  . venv/Scripts/activate
+  python -m pytest -q
+
+Frontend
+1. Install dependencies and run dev server:
+
+  cd frontend
+  npm install
+  npm run dev
+
+2. Open the frontend at the URL printed by Vite (usually http://localhost:5173) and it will proxy API requests to the backend if configured.
+
+Notes
+- CI runs a Python matrix and also verifies Alembic migrations against a PostgreSQL service. If you plan to run the app in production, prefer PostgreSQL over SQLite.
+- Password hashing uses pbkdf2_sha256 in this repository for portability in CI/dev; migrate to bcrypt or argon2 for production if your environment supports it.
 # IssueHub — Lightweight Bug Tracker
 
 A modern, full-stack bug tracking application built with FastAPI and React. IssueHub enables teams to create projects, file issues, track progress, and collaborate through comments with role-based access control.

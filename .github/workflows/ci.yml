@@ -78,3 +78,11 @@ jobs:
           export DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
           python -c "from app.config import settings; settings.database_url='postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test'"
           alembic upgrade head
+      - name: Run backend tests against Postgres
+        working-directory: backend
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
+        run: |
+          . ../venv/bin/activate || true
+          export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/issuehub_test
+          pytest -q

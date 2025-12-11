@@ -1,14 +1,19 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 import pytest
 from app.database import Base, get_db
 from fastapi.testclient import TestClient
 
 
-# Use a temporary file SQLite database for tests (works more reliably across connections)
-TEST_DATABASE_URL = "sqlite:///./test_temp.db"
+# Allow CI to provide a TEST_DATABASE_URL (e.g. postgres) via env. If not set,
+# fall back to a local temporary SQLite file which works reliably for TestClient.
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL") or os.getenv("DATABASE_URL") or "sqlite:///./test_temp.db"
 
-engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+# For SQLite we need the special connect_args; for other DBs (Postgres) we don't.
+connect_args = {"check_same_thread": False} if TEST_DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(TEST_DATABASE_URL, connect_args=connect_args)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

@@ -36,7 +36,9 @@ export default function Signup() {
             toast.success('Account created successfully!');
             navigate('/projects');
         } catch (error) {
-            toast.error(error.response?.data?.detail || 'Signup failed');
+            // Show detailed backend message when available
+            const backendMessage = error.response?.data?.detail || error.response?.data?.error?.message;
+            toast.error(backendMessage || error.message || 'Signup failed');
         } finally {
             setLoading(false);
         }

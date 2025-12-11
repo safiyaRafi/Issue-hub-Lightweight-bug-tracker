@@ -36,6 +36,12 @@ You should see a beautiful login page with:
 - Email and Password fields
 - "Sign up" link at the bottom
 
+> Quick tip: To immediately view demo projects and issues, sign in using the seeded demo account:
+>
+> **alice@example.com / password123**
+>
+> This account is a project maintainer and the seed script populates two projects and multiple issues so you can explore the app right away.
+
 ---
 
 ## 📝 Step 2: Create Your Account

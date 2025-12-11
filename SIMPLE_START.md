@@ -64,6 +64,8 @@ OR
 - **Email**: bob@example.com
 - **Password**: password123
 
+> Quick note: Sign in with **alice@example.com / password123** to immediately see the seeded demo projects and issues (Alice is a project maintainer in the demo data).
+
 ## 📁 What You'll See
 
 1. **Beautiful Login Page** - Glassmorphism design with gradients

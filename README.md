@@ -188,6 +188,12 @@ After running the seed script, you can use these credentials:
 - **User 1**: alice@example.com / password123
 - **User 2**: bob@example.com / password123
 
+> NOTE: To quickly explore the app with sample data (projects, issues, and comments), sign in on the login page with:
+>
+> **alice@example.com / password123**
+>
+> The seeded demo user (Alice) is a project maintainer and the seed script creates 2 projects and multiple issues so you can immediately browse Projects → Issues → Issue Detail.
+
 ## 📚 API Documentation
 
 ### Authentication

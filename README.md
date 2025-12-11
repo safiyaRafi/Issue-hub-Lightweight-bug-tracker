@@ -46,25 +46,9 @@ Frontend
 2. Open the frontend at the URL printed by Vite (usually http://localhost:5173) and it will proxy API requests to the backend if configured.
 
 Notes
-- CI runs a Python matrix and also verifies Alembic migrations against a PostgreSQL service. If you plan to run the app in production, prefer PostgreSQL over SQLite.
-- Password hashing uses pbkdf2_sha256 in this repository for portability in CI/dev; migrate to bcrypt or argon2 for production if your environment supports it.
-
-Docker (development)
-
-You can use Docker Compose to run a local development stack (Postgres + backend + frontend).
-
-1. Build and start the stack:
-
-  docker compose up --build
-
-2. What runs:
-  - Postgres on localhost:5432
-  - Backend on localhost:8000 (Uvicorn)
-  - Frontend (Vite) on localhost:5173
-
-3. Notes:
-  - The compose setup runs `alembic upgrade head` automatically for the backend.
-  - In this dev stack `PREFERRED_PASSWORD_SCHEME` is set to `bcrypt`; make sure your environment can build the `bcrypt` wheel if needed.
+- CI: a minimal GitHub Actions workflow runs backend tests (pytest) on push/PR.
+- Database: PostgreSQL is recommended for production; SQLite is used for local development and tests by default.
+- Password hashing: the backend uses Passlib. For portability in CI/dev the repo falls back to PBKDF2-SHA256; prefer `bcrypt` or `argon2` in production and set `PREFERRED_PASSWORD_SCHEME` accordingly.
 # IssueHub — Lightweight Bug Tracker
 
 A modern, full-stack bug tracking application built with FastAPI and React. IssueHub enables teams to create projects, file issues, track progress, and collaborate through comments with role-based access control.
@@ -385,12 +369,12 @@ frontend/
 
 ## 🔒 Security Features
 
-- **Password Hashing**: Bcrypt with salt
-- **JWT Tokens**: Stored in httpOnly cookies to prevent XSS
-- **CORS**: Configured to allow only frontend origin
-- **Input Validation**: Pydantic models validate all inputs
-- **SQL Injection Prevention**: SQLAlchemy ORM
-- **Role-Based Access Control**: Member and Maintainer roles
+- **Password Hashing**: Passlib CryptContext with PBKDF2-SHA256 fallback; recommended to enable `bcrypt` or `argon2` in production.
+- **JWT Tokens**: Returned on login and can be stored in httpOnly cookies or used as Bearer tokens in Authorization headers.
+- **CORS**: Configured via `app/config.py` to allow specified frontend origins.
+- **Input Validation**: Pydantic models validate all requests and responses.
+- **SQL Injection Prevention**: Use of SQLAlchemy ORM avoids manual SQL concatenation.
+- **Role-Based Access Control**: Member and Maintainer roles enforced by backend permissions.
 
 ## 🎨 Design Decisions
 

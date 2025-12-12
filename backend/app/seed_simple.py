@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.database import SessionLocal
 from app.models.user import User
+from app.auth.security import get_password_hash
 from app.models.project import Project
 from app.models.project_member import ProjectMember, MemberRole
 from app.models.issue import Issue, IssueStatus, IssuePriority
@@ -13,8 +14,11 @@ def seed_data():
     db = SessionLocal()
     
     try:
-        # Pre-hashed password for "password123" to avoid bcrypt version issues
-        password_hash = "$2b$12$pvmsKkC10/3mDaPzj4qVGeaLycEPLi8vGTGxTfsms0A95RIlqC4yapt"
+        # Generate a password hash using the runtime password-hashing backend.
+        # This ensures the seeded hash is verifiable even when bcrypt isn't
+        # available (e.g., some Windows/dev environments). Using the
+        # application's `get_password_hash` keeps seed behavior consistent.
+        password_hash = get_password_hash("password123")
         
         # Create users
         user1 = User(

@@ -1,11 +1,5 @@
-services:
-  - type: web
-    name: issuehub-backend
-    env: docker
-    plan: free
-    dockerfilePath: backend/Dockerfile
-    autoDeploy: true
+""" REMOVED: render.yaml
 
-  - type: postgres
-    name: issuehub-db
-    plan: starter
+This file was removed per project owner's request (deploy to Vercel only).
+If you see this file, please delete it locally and on the remote repository.
+"""

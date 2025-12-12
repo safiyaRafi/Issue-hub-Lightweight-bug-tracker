@@ -1,4 +1,0 @@
-{
-  "REMOVED": "backend/vercel.json removed per owner request. Backend deployment artifacts have been cleared.",
-  "note": "Recreate if you decide to deploy to Vercel again."
-}

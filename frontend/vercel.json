@@ -1,4 +1,0 @@
-{
-  "REMOVED": "frontend/vercel.json removed per owner request. Keep frontend deploy-instructions out of repo.",
-  "note": "If you later want Vercel deployment, recreate a vercel.json or configure it in the Vercel UI."
-}
